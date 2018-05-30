@@ -14,23 +14,27 @@
 
 variable "ami_id" {
   description = "The ID of the AMI to run in the cluster. This should be an AMI built from the Packer template under examples/vault-consul-ami/vault-consul.json. If no AMI is specified, the template will 'just work' by using the example public AMIs. WARNING! Do not use the example AMIs in a production setting!"
-  default     = ""
+  default     = "ami-33fe904c"
 }
 
 variable "create_dns_entry" {
-  description = "If set to true, this module will create a Route 53 DNS A record for the ELB in the var.hosted_zone_id hosted zone with the domain name in var.domain_name."
+  description = "If set to true, this module will create a Route 53 DNS A record for the ELB in the var.hosted_zone_id hosted zone with the domain name in var.domain_name.",
+  default     = true
 }
 
 variable "hosted_zone_domain_name" {
-  description = "The domain name of the Route 53 Hosted Zone in which to add a DNS entry for Vault (e.g. example.com). Only used if var.create_dns_entry is true."
+  description = "The domain name of the Route 53 Hosted Zone in which to add a DNS entry for Vault (e.g. example.com). Only used if var.create_dns_entry is true.",
+  default     = "alphastack.com"
 }
 
 variable "vault_domain_name" {
-  description = "The domain name to use in the DNS A record for the Vault ELB (e.g. vault.example.com). Make sure that a) this is a domain within the var.hosted_zone_domain_name hosted zone and b) this is the same domain name you used in the TLS certificates for Vault. Only used if var.create_dns_entry is true."
+  description = "The domain name to use in the DNS A record for the Vault ELB (e.g. vault.example.com). Make sure that a) this is a domain within the var.hosted_zone_domain_name hosted zone and b) this is the same domain name you used in the TLS certificates for Vault. Only used if var.create_dns_entry is true.",
+  default     = "vault"
 }
 
 variable "ssh_key_name" {
-  description = "The name of an EC2 Key Pair that can be used to SSH to the EC2 Instances in this cluster. Set to an empty string to not associate a Key Pair."
+  description = "The name of an EC2 Key Pair that can be used to SSH to the EC2 Instances in this cluster. Set to an empty string to not associate a Key Pair.",
+  default = "as-vault"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -38,31 +42,37 @@ variable "ssh_key_name" {
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "subnet_tags" {
-  description = "Tags used to find subnets for vault and consul servers"
+variable "public_subnet_tags" {
+  description = "Tags used to find subnets for vault and consul servers (public)"
   type        = "map"
-  default     = {}
+  default     = {availability = "private"}
+}
+
+variable "private_subnet_tags" {
+  description = "Tags used to find subnets for vault and consul servers (private)",
+  type        = "map",
+  default     = {availability = "private"}
 }
 
 variable "vpc_tags" {
   description = "Tags used to find a vpc for building resources in"
   type        = "map"
-  default     = {}
+  default     = {purpose = "ops-tools"}
 }
 
 variable "use_default_vpc" {
   description = "Whether to use the default VPC - NOT recommended for production! - should more likely change this to false and use the vpc_tags to find your vpc"
-  default     = true
+  default     = false
 }
 
 variable "vault_cluster_name" {
   description = "What to name the Vault server cluster and all of its associated resources"
-  default     = "vault-example"
+  default     = "alphastack-vault"
 }
 
 variable "consul_cluster_name" {
   description = "What to name the Consul server cluster and all of its associated resources"
-  default     = "consul-example"
+  default     = "alphastack-consul"
 }
 
 variable "vault_cluster_size" {
